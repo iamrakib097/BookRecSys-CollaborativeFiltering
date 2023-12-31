@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Recommender</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .search-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #search-input {
+            padding: 8px;
+            font-size: 16px;
+        }
+
+        #recommendations {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+
+        .recommendation-item {
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Search for a book...">
+        <button onclick="recommendBooks()">Search</button>
+    </div>
+
+    <ul id="recommendations"></ul>
+
+    <script>
+        function recommendBooks() {
+            // Simulating recommended books based on the search query
+            const searchInput = document.getElementById('search-input');
+            const query = searchInput.value.trim().toLowerCase();
+
+            // Mock recommendations (replace this with your actual recommendation logic)
+            const recommendations = getMockRecommendations(query);
+
+            // Display recommendations in the list
+            const recommendationsList = document.getElementById('recommendations');
+            recommendationsList.innerHTML = '';
+
+            if (recommendations.length > 0) {
+                recommendations.forEach(book => {
+                    const li = document.createElement('li');
+                    li.className = 'recommendation-item';
+                    li.textContent = book;
+                    recommendationsList.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'No recommendations found.';
+                recommendationsList.appendChild(li);
+            }
+        }
+
+        function getMockRecommendations(query) {
+            // Replace this with your actual recommendation logic (e.g., API call, database query)
+            const mockData = {
+                'harry potter': ['Harry Potter and the Sorcerer\'s Stone', 'Harry Potter and the Chamber of Secrets', '...'],
+                'lord of the rings': ['The Fellowship of the Ring', 'The Two Towers', 'The Return of the King', '...'],
+                // Add more mock data as needed
+            };
+
+            return mockData[query] || [];
+        }
+    </script>
+</body>
+
+</html>
