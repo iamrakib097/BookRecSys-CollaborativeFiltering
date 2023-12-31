@@ -1,97 +1,162 @@
+
+
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Recommender</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
 
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            background-image: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);                /* Additional styling for the HTML content can be added here */
+            }        /* Add custom styles here */
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
         }
 
-        .search-container {
-            text-align: center;
-            margin-bottom: 20px;
+        .card:hover {
+            transform: scale(1.05);
         }
 
-        #search-input {
-            padding: 8px;
-            font-size: 16px;
+        .card img {
+            border-radius: 10px 10px 0 0;
+            object-fit: cover;
+            height: 200px;
         }
 
-        #recommendations {
-            list-style: none;
-            padding: 0;
-            text-align: left;
+        .card-body {
+            padding: 20px;
         }
 
-        .recommendation-item {
-            background-color: #ffffff;
-            border: 1px solid #dee2e6;
-            padding: 10px;
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .card-text {
             margin-bottom: 10px;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .card-link {
+            color: inherit; /* Use the default text color */
+            text-decoration: none; /* Remove underline */
+            cursor: pointer; /* Change cursor to pointer */
+        }
+
+        .card-link:hover {
+            text-decoration: none; /* Remove underline on hover */
+        }
+        
+
     </style>
+
+    <title>Book Recommendation</title>
+
+    
 </head>
 
 <body>
-    <div class="search-container">
-        <input type="text" id="search-input" placeholder="Search for a book...">
-        <button onclick="recommendBooks()">Search</button>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/#">Book Recommender</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="ml-auto">
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-item nav-link  mr-4" href="/">Home</a>
+                <a class="nav-item nav-link active mr-4" href="/recommend">Recommend<span class="sr-only">(current)</span></a>
+                <a class="nav-item nav-link mr-4" href="/about">About</a>
+            </div>
+        </div>
     </div>
+</nav>
 
-    <ul id="recommendations"></ul>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class= style="font-size:50px">Search Books</h1>
+            <form action="/recommend_books" method="post">
+                <input name="user_input" type="text" class="form-control"><br>
+                <input type="submit" class="btn btn-lg btn-warning">
+            </form>
+        </div>
+        
+        {% if user_input %}
+        <div class="col-md-12 margin-top mt-5"><h5>Recommended books for: {{ user_input }}</h5></div>
+        {% endif %}
 
-    <script>
-        function recommendBooks() {
-            // Simulating recommended books based on the search query
-            const searchInput = document.getElementById('search-input');
-            const query = searchInput.value.trim().toLowerCase();
+    
+        {% if data is not none %}
+        <div class="row">
+            
+            {% for i in data %}
+            <div class="col-md-3" style="margin-top:10px">
+                
+                <a href="#" onclick="submitRecommendForm('{{ i[0] }}')" class="card-link">
+                    <div class="card">
+                        <div class="card-body">
+                            <img class="card-img-top" src="{{i[2]}}">
+                            <p>{{i[0]}}</p>
+                            <h4>{{i[1]}}</h4>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="card text-center mx-auto mt-5 p-4" style="max-width: 400px;">
+            <h1 class="card-text" style="font-size: 30px;">No recommendations found for this book.</h1>
+        </div>
+    {% endif %}
+    </div>
+</div>
+<form id="recommendForm" action="{{ url_for('recommend_books') }}" method="post" style="display: none;">
+    <input id="userInput" type="hidden" name="user_input" value="">
+</form>
 
-            // Mock recommendations (replace this with your actual recommendation logic)
-            const recommendations = getMockRecommendations(query);
 
-            // Display recommendations in the list
-            const recommendationsList = document.getElementById('recommendations');
-            recommendationsList.innerHTML = '';
+<script>
+    function submitRecommendForm(bookName) {
+        document.getElementById("userInput").value = bookName;
+        document.getElementById("recommendForm").submit();
+    }
+</script>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
 
-            if (recommendations.length > 0) {
-                recommendations.forEach(book => {
-                    const li = document.createElement('li');
-                    li.className = 'recommendation-item';
-                    li.textContent = book;
-                    recommendationsList.appendChild(li);
-                });
-            } else {
-                const li = document.createElement('li');
-                li.textContent = 'No recommendations found.';
-                recommendationsList.appendChild(li);
-            }
-        }
-
-        function getMockRecommendations(query) {
-            // Replace this with your actual recommendation logic (e.g., API call, database query)
-            const mockData = {
-                'harry potter': ['Harry Potter and the Sorcerer\'s Stone', 'Harry Potter and the Chamber of Secrets', '...'],
-                'lord of the rings': ['The Fellowship of the Ring', 'The Two Towers', 'The Return of the King', '...'],
-                // Add more mock data as needed
-            };
-
-            return mockData[query] || [];
-        }
-    </script>
+        
 </body>
-
 </html>
